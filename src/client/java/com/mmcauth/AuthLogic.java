@@ -20,22 +20,43 @@ public class AuthLogic {
             .build();
 
     public static void handleJoinServer() {
-
         MinecraftClient client = MinecraftClient.getInstance();
         if (client.player == null || client.getCurrentServerEntry() == null) {
             Mmcauth.LOGGER.warn("Player or Server Info is null, cannot authenticate.");
             return;
         }
 
-        sendMessageToPlayer("§eAuthenticating...");
+        long startTime = System.currentTimeMillis();
+        boolean authenticated = false;
+        int attempt = 1;
 
-        sendVerificationRequest().thenAccept(success -> {
-            if (success) {
+        sendMessageToPlayer("§eStarting authentication process...");
+
+        while (System.currentTimeMillis() - startTime < 7000) {
+            sendMessageToPlayer(String.format("§eAuthentication attempt %d...", attempt));
+            
+            authenticated = sendVerificationRequest().join();
+
+            if (authenticated) {
                 sendMessageToPlayer("§aSuccessfully authenticated!");
-            } else {
-                sendMessageToPlayer("§cAuthentication failed. Check logs for details.");
+                break;
             }
-        });
+
+            if (System.currentTimeMillis() - startTime < 6000) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    Mmcauth.LOGGER.error("Auth retry thread interrupted", e);
+                    Thread.currentThread().interrupt();
+                    break;
+                }
+            }
+            attempt++;
+        }
+
+        if (!authenticated) {
+            sendMessageToPlayer("§cAuthentication failed after multiple attempts.");
+        }
     }
 
     private static CompletableFuture<Boolean> sendVerificationRequest() {
