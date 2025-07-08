@@ -1,0 +1,35 @@
+{
+	"schemaVersion": 1,
+	"id": "mmcauth",
+	"version": "${version}",
+	"name": "MMC Auth",
+	"description": "Handles authentication for MesterMC servers.",
+	"authors": [
+		"orban viktor"
+	],
+	"contact": {},
+	"license": "Unlicense",
+	"icon": "assets/mmcauth/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.mmcauth.Mmcauth"
+		],
+		"client": [
+			"com.mmcauth.MmcauthClient"
+		]
+	},
+	"mixins": [
+		"mmcauth.mixins.json",
+		{
+			"config": "mmcauth.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.15.11",
+		"minecraft": "~1.21",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}

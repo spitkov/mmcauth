@@ -1,0 +1,3 @@
+mmcauth
+
+todo: add icon
